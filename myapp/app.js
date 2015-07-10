@@ -29,15 +29,26 @@ var postSchema = new Schema({
   title: { type: String },
   content: { type: String },
   createdTime: { type: Date, default: Date.now },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user' }
+});
+
+var userSchema = new Schema({
+  name: { type: String, unique: true, select: false },
+  displayName: { type: String, unique: true },
+  email: { type: String, unique: true },
+  createdTime: { type: Date, default: Date.now, select: false },
+  provider: { type: Object, select: false }
 });
 
 var Post = mongoose.model('post', postSchema);
+var User = mongoose.model('user', userSchema);
 
 var app = express();
 
 app.db = {
   model: {
-    Post: Post
+    Post: Post,
+    User: User
   }
 };
 
@@ -71,7 +82,23 @@ passport.use(new FacebookStrategy({
   callbackURL: 'http://localhost:3000/auth/facebook/callback'
   },
   function(accessToken, refreshToken, profile, done){
-    return done(null, profile);
+    app.db.model.User.findOne({"facebook._json.id": profile._json.id}, function(err, user){
+      if(!user){
+        var instance = {
+          name: profile._json.name,
+          displayName: profile.displayName,
+          email: '',
+          provider: profile
+        };
+
+        var obj = new app.db.model.User(instance);
+        obj.save();
+
+        user = instance;
+      }
+
+      return done(null, user);
+    });
   }
 ));
 

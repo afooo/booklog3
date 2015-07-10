@@ -5,6 +5,9 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+var passport = require('passport');
+
+var FacebookStrategy = require('passport-facebook');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -28,6 +31,24 @@ var postSchema = new Schema({
 
 var Post = mongoose.model('post', postSchema);
 
+passport.serializeUser(function(user, done){
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done){
+  done(null, user);
+});
+
+passport.use(new FacebookStrategy({
+  clientID: '410866279063864',
+  clientSecret: '3887b8914b81d0e778d3b9af10775fb6',
+  callbackURL: 'http://localhost:3000/'
+  },
+  function(accessToken, refreshToken, profile, done){
+    done(null, profile);
+  }
+));
+
 var app = express();
 
 app.db = {
@@ -35,6 +56,15 @@ app.db = {
     Post: Post
   }
 };
+
+app.get('/auth/facebook',
+  passport.authenticate('facebook'));
+
+app.get('auth/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function(req, res){
+    res.redirect('/');
+  });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

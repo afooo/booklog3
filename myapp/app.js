@@ -102,10 +102,15 @@ passport.use(new FacebookStrategy({
   }
 ));
 
+app.get('/', function(req, res){
+  res.render('test', { title: 'Hey', message: 'Hello Nicole!'});
+});
+
 app.use('/', routes);
 app.use('/', posts);
 app.use('/users', users);
 app.use('/account', account);
+
 
 app.get('/auth/facebook',
   passport.authenticate('facebook'));

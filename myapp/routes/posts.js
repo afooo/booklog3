@@ -2,8 +2,19 @@ var express = require('express');
 var router = express.Router();
 
 /* read/post/update/delete articles */
+router.get('/1/post', function(req, res, next){
+	if(req.isAuthenticated()){
+		return next();
+	}
+
+	res.redirect('/auth/facebook');
+});
+
 router.get('/1/post', function(req, res, next) {
-	req.app.db.model.Post.find({}, function(err, posts){
+	req.app.db.model.Post
+		.find({})
+		.populate('userId')
+		.exec(function(err, posts){
 		res.json(posts);
 	});
 });

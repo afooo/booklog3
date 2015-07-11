@@ -1,16 +1,13 @@
 var express = require('express');
 var router = express.Router();
+var events = require('events');
 
-/* read/post/update/delete articles */
-/*
-router.get('/1/post', function(req, res, next){
-	if(req.isAuthenticated()){
-		return next();
-	}
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) { return next(); }
+  res.redirect('/login/facebook');
+}
 
-	res.redirect('/auth/facebook');
-});
-*/
+router.get('/1/post', ensureAuthenticated);
 router.get('/1/post', function(req, res, next) {
 	req.app.db.model.Post
 		.find({})

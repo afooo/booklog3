@@ -6,9 +6,10 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var session = require('express-session');
-var passport = require('passport');
 
-var FacebookStrategy = require('passport-facebook').Strategy;
+var passport = require('passport')
+  , FacebookStrategy = require('passport-facebook').Strategy;
+
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -60,7 +61,7 @@ app.set('view engine', 'jade');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({ secret: 'booklog3' }));
@@ -125,6 +126,15 @@ app.use(function(req, res, next) {
 });
 
 // error handlers
+
+app.use(function(err, req, res, next){
+  if(err === 'data is empty'){
+    console.log('data is empty');
+    res.status(500).send('data is empty');
+  } else {
+    next(err);
+  }
+});
 
 // development error handler
 // will print stacktrace

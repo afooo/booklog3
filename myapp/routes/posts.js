@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 /* read/post/update/delete articles */
+/*
 router.get('/1/post', function(req, res, next){
 	if(req.isAuthenticated()){
 		return next();
@@ -9,7 +10,7 @@ router.get('/1/post', function(req, res, next){
 
 	res.redirect('/auth/facebook');
 });
-
+*/
 router.get('/1/post', function(req, res, next) {
 	req.app.db.model.Post
 		.find({})

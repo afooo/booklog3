@@ -2,22 +2,37 @@ var express = require('express');
 var router = express.Router();
 var events = require('events');
 
-function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) { return next(); }
-  res.redirect('/auth/facebook');
-}
-
-router.get('/1/post', ensureAuthenticated);
 router.get('/1/post', function(req, res, next) {
-	req.app.db.model.Post
-		.find({})
-		.populate('userId')
-		.exec(function(err, posts){
-		res.json(posts);
+	var workflow = new events.EventEmitter();
+
+	workflow.once('authenticated', function(){
+		if(req.isAuthenticated()){
+			console.log('auth is true');
+			return workflow.emit('listPost');
+		}
+
+		workflow.emit('authFail');
 	});
+
+	workflow.once('authFail', function(){
+		console.log('auth is false');
+		res.redirect('/auth/facebook');
+	});
+
+	workflow.on('listPost', function(){
+		console.log('i got here');
+		
+		req.app.db.model.Post
+			.find({})
+			.populate('userId')
+			.exec(function(err, posts){
+				res.json(posts);
+			});		
+	});
+
+	workflow.emit('authenticated');
 });
 
-router.get('/1/post', ensureAuthenticated);
 router.get('/1/post/:id', function(req, res, next) {
 	req.app.db.model.Post.findOne({ _id: req.params.id }, function(err, post){
 		res.json(post);
@@ -41,10 +56,8 @@ router.post('/1/post', function(req, res, next) {
 	};
 
 	workflow.on('authenticate', function(){
-		if(!req.isAuthenticated()){
-			workflow.outcome.errfor = 'authenticate fail';
+		if(!req.isAuthenticated())
 			res.redirect('/auth/facebook');
-		}
 
 		workflow.outcome.isAuth = true;
 		workflow.emit('validate');

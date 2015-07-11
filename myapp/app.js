@@ -115,7 +115,8 @@ app.get('/auth/facebook',
 app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   function(req, res){
-    res.redirect('/account/profile');
+    console.log('im back');
+    res.redirect('/1/post');
   });
 
 // catch 404 and forward to error handler

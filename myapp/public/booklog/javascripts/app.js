@@ -27,13 +27,13 @@ app.contentModel = Backbone.Model.extend({
 
 app.contentView = Backbone.View.extend({
 	el: '#content',
-	template: _.template($('#postTemplate').html()),
 	events: {
-		'click #subject' : 'readOne'
+		'click #readOne' : 'readOne'
 	},
 	// constructor
 	initialize: function(){
 		this.model = new app.contentModel();
+		this.template = _.template($('#postTemplate').html());
 		this.model.bind('change', this.render, this);
 
 		this.model.fetch();
@@ -42,7 +42,11 @@ app.contentView = Backbone.View.extend({
 		this.$el.html(this.template(this.model.attributes));
 		return this;
 	},
-	readOne: function(){}
+	readOne: function(){
+		this.template = _.template($('#readTemplate').html());
+		this.$el.html(this.template(this.model.attributes));
+		return this;
+	}
 });
 
 app.formView = Backbone.View.extend({

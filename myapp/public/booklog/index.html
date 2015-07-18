@@ -25,9 +25,17 @@
         </a>
             <h4 class="media-heading"><%= post.title %></h4>
             <h5><%= post.createdTime %></h5>
-            <button id="subject" data-id="<%= post._id %>" class="btn btn-success">Read More</button>
+            <button id="readOne" data-id="<%= post._id %>" class="btn btn-success">Read More</button>
     </div>
     <% }); %>
+</script>
+
+<script id='readTemplate' type='text'>
+    <div>
+        <h4>title</h4>
+        <h6>createdTime</h6>
+        <h5>content</h5>
+    </div>
 </script>
 
     <nav class="navbar navbar-fixed-top navbar-inverse" role="navigation">

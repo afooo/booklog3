@@ -11,9 +11,9 @@ var app = app || {};
 app.contentModel = Backbone.Model.extend({
 	url: function(){
 		return 'http://localhost:3000/1/post'
-//				+ ( this.id === null ? '' : '/' + this.id );
+				+ ( this.id === null ? '' : '/' + this.id );
 	},
-//	id: '',
+	id: '',
 	defaults: {
 		success: {},
 		errfor: {},
@@ -42,10 +42,11 @@ app.contentView = Backbone.View.extend({
 		this.$el.html(this.template(this.model.attributes));
 		return this;
 	},
-	readOne: function(){
+	readOne: function(evt){
+		console.log(this);
+		this.model.id = $(evt.target).data('id');
 		this.template = _.template($('#readTemplate').html());
-		this.$el.html(this.template(this.model.attributes));
-		return this;
+		this.model.fetch();
 	}
 });
 
@@ -53,13 +54,12 @@ app.formView = Backbone.View.extend({
 	el: '#saveForm',
 	initialize: function(){
 		this.model = new app.contentModel();
-//		this.model.fetch();
 	},
 	events: {
 		'click #savePost': "save",
 	},
-	save: function(e){
-		e.preventDefault();
+	save: function(evt){
+		evt.preventDefault();
 		
 		// backbone > model > save([attirbutes], [options])
 		this.model.save({

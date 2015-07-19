@@ -44,9 +44,35 @@ router.get('/1/post', function(req, res, next) {
 });
 
 router.get('/1/post/:id', function(req, res, next) {
-	req.app.db.model.Post.findOne({ _id: req.params.id }, function(err, post){
-		res.json(post);
+	var workflow = new events.EventEmitter();
+	var Post  = req.app.db.model.Post;
+
+	workflow.outcome = {
+		success: false,
+		errfor: {}
+	};
+
+	workflow.on('validate', function(){
+		console.log('validate');
+		workflow.emit('listPost');
 	});
+
+	workflow.on('listPost', function(){
+		Post
+			.findOne({ _id: req.params.id })
+			.exec(function(err, post){
+				workflow.outcome.success = true;
+				workflow.outcome.post = post;
+				workflow.emit('response');
+			});
+	});
+
+	workflow.on('response', function(){
+		console.log('response');
+		res.send(workflow.outcome);
+	});
+
+	workflow.emit('validate');
 });
 
 router.get('/1/title/:title', function(req, res, next) {

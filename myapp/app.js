@@ -10,6 +10,16 @@ var session = require('express-session');
 var passport = require('passport')
   , FacebookStrategy = require('passport-facebook').Strategy;
 
+var winston = require('winston');
+
+winston.log('info', 'Hello distributed log files!');
+winston.info('Hello again distributed logs');
+
+winston.level = 'debug';
+winston.log('debug', 'Now my debug messages are written to console!');
+
+winston.add(winston.transports.File, { filename: 'booklog3-info.log' });
+winston.remove(winston.transports.Console);
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -18,10 +28,10 @@ var account = require('./routes/account');
 
 mongoose.connect('mongodb://booklog3:123456@ds047622.mongolab.com:47622/booklog3');
 mongoose.connection.on('error', function(){
-  console.log('MongoDB: connect error.');
+  winston.log('info', 'MongoDB: connect error.');
 });
 mongoose.connection.on('open', function(){
-  console.log('MongoDB: connected.');
+  winston.log('info', 'MongoDB: connected.');
 });
 
 var Schema = mongoose.Schema;
@@ -114,6 +124,7 @@ app.get('/auth/facebook',
 app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/auth/facebook' }),
   function(req, res){
+//    winston.log('info', 'Pass FB auth!');
     res.redirect('/1/post');
   });
 

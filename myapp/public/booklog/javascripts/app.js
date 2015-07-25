@@ -43,7 +43,6 @@ app.contentView = Backbone.View.extend({
 		return this;
 	},
 	readOne: function(evt){
-		console.log(this);
 		this.model.id = $(evt.target).data('id');
 		this.template = _.template($('#readTemplate').html());
 		this.model.fetch();
